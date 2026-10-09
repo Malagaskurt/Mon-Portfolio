@@ -296,7 +296,7 @@
   const evenements = ['pointerdown', 'keydown', 'touchend'];
   const auPremierGeste = e => {
     if (coupeParLeVisiteur || enMarche) return retirer();
-    if (e.target.closest && e.target.closest('.platine')) return; // le bouton gère lui-même
+    if (e.target.closest && e.target.closest('.platine, .entree')) return; // ces éléments gèrent eux-mêmes le son
     lancer().then(ok => { if (ok) retirer(); });
   };
   const retirer = () => evenements.forEach(n => document.removeEventListener(n, auPremierGeste, true));
@@ -309,7 +309,12 @@
       bouton.querySelector('.platine-txt').textContent = 'Activer le son';
     } else retirer();
   };
-  if (document.readyState === 'complete') essaiAuChargement();
+  // Écran d'entrée : son clic est le geste qu'exigent les navigateurs pour le son
+  const entree = document.querySelector('.entree');
+  if (entree && !entree.hidden) {
+    document.addEventListener('studio:entrer', () => { coupeParLeVisiteur = false; lancer().then(ok => { if (ok) retirer(); }); });
+    document.addEventListener('studio:silence', () => { coupeParLeVisiteur = true; retirer(); majBouton(); });
+  } else if (document.readyState === 'complete') essaiAuChargement();
   else window.addEventListener('load', essaiAuChargement);
 
   bouton.addEventListener('click', () => {

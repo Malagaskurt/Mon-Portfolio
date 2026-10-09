@@ -576,3 +576,25 @@ a.img:hover { transform: translateY(-6px) rotate(var(--r)); }
 .platine.attend { animation: none; border-color: var(--or); color: var(--or); }
 @media (max-width: 599px) { .platine { padding: 12px 14px; } .platine-txt { display: inline; } }
 .footer .credit-musique { opacity: .6; text-transform: none; letter-spacing: .02em; }
+
+/* ==========================================================
+   Écran d'entrée de l'accueil : le studio dans le noir
+   ========================================================== */
+.entree { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; text-align: center; padding: 24px;
+  background: radial-gradient(ellipse 60% 55% at 50% 50%, rgba(4,0,17,.72) 0%, rgba(4,0,17,.94) 70%, #040011 100%); }
+.entree[hidden] { display: none; }
+html.entree-ouverte, html.entree-ouverte body { overflow: hidden; }
+.entree-contenu { display: flex; flex-direction: column; align-items: center; gap: 22px; }
+.entree-logo { font-family: var(--f-titre); font-size: clamp(40px, 7vw, 84px); letter-spacing: -.02em; text-transform: uppercase; color: var(--rouge); line-height: 1; }
+.entree-sous { font-family: var(--f-texte); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--creme); opacity: .85; }
+.entree-btn { margin-top: 14px; border: 0; cursor: pointer; background: var(--or); color: var(--jaguar);
+  font: 700 14px/1 var(--f-texte); letter-spacing: .08em; text-transform: uppercase; padding: 20px 32px;
+  transition: background .2s ease, transform .2s ease; }
+.entree-btn:hover { background: #f0ad3f; transform: translateY(-2px); }
+.entree-muet { border: 0; background: none; cursor: pointer; color: var(--creme); opacity: .6;
+  font: 400 12px/1.4 var(--f-texte); letter-spacing: .06em; text-decoration: underline; text-underline-offset: 4px; }
+.entree-muet:hover { opacity: 1; }
+/* la lumière s'allume : petit vacillement de néon, puis l'écran noir disparaît */
+.entree.allume { pointer-events: none; animation: lumiere 1.2s ease forwards; }
+@keyframes lumiere { 0% { opacity: 1; } 12% { opacity: .35; } 20% { opacity: .9; } 30% { opacity: .2; } 40% { opacity: .6; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .entree.allume { animation: none; opacity: 0; } }
