@@ -51,9 +51,9 @@ Chaque `git push` met le site à jour automatiquement.
 
 ## Musique de l'accueil
 
-Le bouton son en bas à gauche joue un groove rock / funk à 112 BPM (composition originale, générée par le code, sans droits à payer) avec le crépitement d'un vinyle. Elle démarre dès l'arrivée sur l'accueil. Si le navigateur bloque le son (c'est le cas par défaut pour un nouveau visiteur), elle démarre au premier clic ou tap sur la page. En défilant pour entrer dans l'écran, le volume baisse petit à petit jusqu'au silence, et remonte si on revient en haut. Un curseur de volume apparaît à côté de la platine ; un clic sur la platine coupe le son pour de bon.
+Le bouton son en bas à gauche joue un groove rock / funk à 112 BPM (composition originale, générée par le code, sans droits à payer) avec le crépitement d'un vinyle. Elle démarre dès l'arrivée sur l'accueil. Si le navigateur bloque le son (c'est le cas par défaut pour un nouveau visiteur), elle démarre au premier clic ou tap sur la page. En défilant pour entrer dans l'écran, le volume baisse petit à petit jusqu'au silence, et remonte si on revient en haut. Un clic sur le bouton « Couper le son » arrête la musique pour de bon.
 
-Pour mettre ta propre musique à la place du groove, dépose le fichier dans `assets/audio/` puis ajoute `data-piste="assets/audio/ton-fichier.mp3"` sur le bouton `platine` dans `index.html`. Utilise une musique dont tu as les droits.
+Pour mettre ta propre musique à la place du groove, dépose le fichier dans `assets/audio/` puis ajoute `data-piste="assets/audio/ton-fichier.mp3"` sur le bouton `platine` (le bouton son) dans `index.html`. Utilise une musique dont tu as les droits.
 
 ## Sécurité
 

@@ -567,3 +567,11 @@ a.img:hover { transform: translateY(-6px) rotate(var(--r)); }
 .platine.joue .platine-eq i:nth-child(4) { animation-delay: -.45s; }
 @media (max-width: 599px) { .platine { padding: 0 14px; } }
 @media (prefers-reduced-motion: reduce) { .platine.joue .platine-eq i { animation: none; } }
+
+/* bouton son : simple texte, dans le style des boutons du portfolio */
+.platine { height: auto; padding: 14px 20px; gap: 0; border-radius: 0; background: var(--jaguar); color: var(--creme);
+  box-shadow: none; border: 1px solid rgba(239,235,226,.6); font-size: 12px; letter-spacing: .08em; }
+.platine:hover { transform: none; background: var(--creme); color: var(--jaguar); }
+.platine-eq, .platine-volume, .platine-disque { display: none !important; }
+.platine.attend { animation: none; border-color: var(--or); color: var(--or); }
+@media (max-width: 599px) { .platine { padding: 12px 14px; } .platine-txt { display: inline; } }

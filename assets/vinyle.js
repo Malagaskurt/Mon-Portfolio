@@ -300,7 +300,7 @@
     const ok = await lancer();
     if (!ok) {
       bouton.classList.add('attend');
-      bouton.querySelector('.platine-txt').textContent = matchMedia('(hover: none)').matches ? 'Touchez la page pour le son' : 'Cliquez pour le son';
+      bouton.querySelector('.platine-txt').textContent = 'Activer le son';
     } else retirer();
   };
   if (document.readyState === 'complete') essaiAuChargement();
