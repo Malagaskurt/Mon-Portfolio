@@ -279,7 +279,7 @@
     if (zoneVideo) zoneVideo.classList.toggle('visible', enMarche && avecYoutube());
     bouton.classList.remove('attend');
     bouton.setAttribute('aria-pressed', String(enMarche));
-    bouton.querySelector('.platine-txt').textContent = enMarche ? 'Couper le son' : 'Lancer le vinyle';
+    bouton.querySelector('.platine-txt').textContent = enMarche ? 'Couper le son' : 'Lancer le son';
   };
 
   // ---------- démarrage automatique ----------
