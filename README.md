@@ -51,7 +51,7 @@ Chaque `git push` met le site à jour automatiquement.
 
 ## Musique de l'accueil
 
-La platine en bas à gauche joue une boucle lo-fi avec le crépitement d'un vinyle. Elle démarre dès l'arrivée sur l'accueil. Si le navigateur bloque le son (c'est le cas par défaut pour un nouveau visiteur), elle démarre au premier clic ou tap sur la page. En défilant pour entrer dans l'écran, le volume baisse petit à petit jusqu'au silence, et remonte si on revient en haut. Un curseur de volume apparaît à côté de la platine ; un clic sur la platine coupe le son pour de bon.
+La platine en bas à gauche joue un groove funk / soul années 70 (composition originale, générée par le code, sans droits à payer) avec le crépitement d'un vinyle. Elle démarre dès l'arrivée sur l'accueil. Si le navigateur bloque le son (c'est le cas par défaut pour un nouveau visiteur), elle démarre au premier clic ou tap sur la page. En défilant pour entrer dans l'écran, le volume baisse petit à petit jusqu'au silence, et remonte si on revient en haut. Un curseur de volume apparaît à côté de la platine ; un clic sur la platine coupe le son pour de bon.
 
 Pour mettre ta propre musique, dépose le fichier dans `assets/audio/` puis ajoute `data-piste="assets/audio/ton-fichier.mp3"` sur le bouton `platine` dans `index.html`. Utilise une musique dont tu as les droits.
 
