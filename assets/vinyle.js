@@ -40,11 +40,11 @@
     return src;
   };
 
-  // ---------- groove funk / soul 70s, composition originale ----------
-  // Vamp de deux accords (Dm9 / G13), basse ronde syncopée, Rhodes, cuivres,
-  // cowbell et congas, tempo de croisière. 4 mesures qui tournent en boucle.
-  const BPM = 88, temps = 60 / BPM, dbl = temps / 4;      // dbl = une double croche
-  const SWING = 0.18;                                      // léger shuffle sur les doubles croches
+  // ---------- groove rock / funk, composition originale ----------
+  // Riff de guitare saturée, guitare funk en grattés étouffés, basse qui claque,
+  // cuivres, batterie qui pousse à 112 BPM. 4 mesures qui tournent en boucle.
+  const BPM = 112, temps = 60 / BPM, dbl = temps / 4;      // dbl = une double croche
+  const SWING = 0.06;                                      // léger shuffle sur les doubles croches
   const pos = (t, i) => t + i * dbl + (i % 2 ? dbl * SWING : 0);
   const freq = n => 440 * Math.pow(2, (n - 69) / 12);
 
@@ -93,34 +93,71 @@
     note(t, freq(n) * 1.003, duree, v * 0.7, 'sawtooth', 0.03, 1700);
   });
 
-  // Accords : Dm9 (ré fa la do mi) et G13 (sol si fa la mi)
-  const DM9 = [62, 65, 69, 72, 76], G13 = [59, 65, 69, 71, 76];
-  // Lignes de basse (numéro de double croche, note MIDI, durée en doubles) : originales
-  const BASSE_D = [[0, 38, 3], [3, 50, 1], [6, 38, 2], [8, 45, 1], [10, 48, 2], [12, 50, 1], [14, 47, 1], [15, 45, 1]];
-  const BASSE_G = [[0, 43, 3], [3, 43, 1], [5, 55, 1], [7, 41, 2], [10, 43, 2], [12, 47, 1], [13, 48, 1], [14, 49, 2]];
+  // Guitare saturée : dents de scie dans une distorsion, puis un filtre « baffle »
+  let ampli = null;
+  const preparerAmpli = () => {
+    const dist = ctx.createWaveShaper(), k = 28, n = 2048, courbe = new Float32Array(n);
+    for (let i = 0; i < n; i++) { const x = i * 2 / n - 1; courbe[i] = (1 + k) * x / (1 + k * Math.abs(x)); }
+    dist.curve = courbe; dist.oversample = '2x';
+    const baffle = ctx.createBiquadFilter(); baffle.type = 'lowpass'; baffle.frequency.value = 2600; baffle.Q.value = 0.8;
+    const creux = ctx.createBiquadFilter(); creux.type = 'peaking'; creux.frequency.value = 900; creux.gain.value = -4;
+    const vol = ctx.createGain(); vol.gain.value = 0.11;
+    dist.connect(baffle).connect(creux).connect(vol).connect(musique);
+    ampli = dist;
+  };
+  const guitare = (t, notes, duree, v = 0.5) => notes.forEach((n, k) => {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sawtooth'; o.frequency.value = freq(n); o.detune.value = (Math.random() - 0.5) * 10;
+    const debut = t + k * 0.006;
+    g.gain.setValueAtTime(0, debut); g.gain.linearRampToValueAtTime(v, debut + 0.004);
+    g.gain.setTargetAtTime(v * 0.6, debut + 0.02, 0.08);
+    g.gain.setTargetAtTime(0.0001, debut + duree, 0.02);
+    o.connect(g).connect(ampli); o.start(debut); o.stop(debut + duree + 0.15);
+  });
+  // gratté étouffé de guitare funk (son clair, très court)
+  const chick = (t, notes, v = 0.018) => { notes.forEach(n => note(t, freq(n), 0.07, v, 'square', 0.002, 3200)); bruit(t, 0.03, 0.02, 3000, 'bandpass'); };
+  // basse qui claque : attaque nette + harmonique
+  const basseSlap = (t, n, duree, v = 0.26) => { note(t, freq(n), duree, v, 'triangle', 0.004, 1400); note(t, freq(n) * 2, 0.06, v * 0.35, 'square', 0.002, 2500); };
+
+  // Riff original en mi : E5, G5, A5, avec une montée à la fin du cycle
+  const RIFF = [
+    [[0, 40, 2], [3, 40, 1], [6, 43, 2], [8, 45, 3], [12, 43, 1], [14, 40, 2]],
+    [[0, 40, 2], [3, 40, 1], [6, 43, 2], [8, 45, 2], [11, 47, 1], [12, 45, 2], [14, 43, 1]],
+    [[0, 40, 2], [3, 40, 1], [6, 43, 2], [8, 45, 3], [12, 43, 1], [14, 40, 2]],
+    [[0, 45, 2], [3, 45, 1], [4, 47, 2], [7, 48, 2], [10, 47, 2], [12, 50, 4]],
+  ];
+  const quinte = n => [n, n + 7, n + 12];
+  const E9 = [64, 68, 74, 78], A9 = [57, 61, 67, 71];
 
   let musique = null, prochaineMesure = 0, mesure = 0;
   const programmerMesure = t => {
-    const m = mesure % 4, surD = m % 2 === 0;
-    const acc = surD ? DM9 : G13, basse = surD ? BASSE_D : BASSE_G;
+    if (!ampli) preparerAmpli();
+    const m = mesure % 4, riff = RIFF[m];
 
-    // basse ronde
-    basse.forEach(([i, n, d]) => note(pos(t, i), freq(n), d * dbl * 1.1, 0.22, 'triangle', 0.008, 900));
-    // Rhodes : stabs syncopés sur le "et" des temps
-    [[2, 2], [6, 1], [10, 3], [14, 1]].forEach(([i, d]) => rhodes(pos(t, i), acc, d * dbl * 1.8));
-    // cuivres en réponse à la fin de chaque deuxième mesure
-    if (m === 1) cuivres(pos(t, 13), [69, 72, 76], dbl * 2.5);
-    if (m === 3) { cuivres(pos(t, 11), [71, 74, 77], dbl * 1.4); cuivres(pos(t, 14), [72, 76, 79], dbl * 4); }
+    // riff de guitare saturée (accords de puissance) et basse à l'unisson
+    riff.forEach(([i, n, d]) => {
+      guitare(pos(t, i), quinte(n + 12), d * dbl * 0.92);
+      basseSlap(pos(t, i), n, d * dbl * 0.95);
+    });
+    // fantômes de basse entre les notes du riff
+    [5, 13].forEach(i => note(pos(t, i), freq(riff[0][1] + 12), 0.05, 0.1, 'square', 0.002, 900));
 
-    // batterie : grosse caisse syncopée, caisse claire sur 2 et 4, charleston en doubles
-    [0, 7, 10].forEach(i => grosseCaisse(pos(t, i)));
-    if (m === 3) grosseCaisse(pos(t, 15), 0.4);
-    [4, 12].forEach(i => caisseClaire(pos(t, i)));
-    caisseClaire(pos(t, 15), 0.04);                         // note fantôme
-    for (let i = 0; i < 16; i++) bruit(pos(t, i), i % 4 === 2 ? 0.12 : 0.04, i % 2 ? 0.018 : 0.03, 8000);
-    // cowbell et congas, pour la touche chicano soul
-    [0, 3, 6, 10, 12].forEach(i => cowbell(pos(t, i), i === 0 ? 0.055 : 0.035));
-    [[2, 220], [3, 220], [7, 165], [9, 220], [11, 165], [14, 196], [15, 165]].forEach(([i, f]) => conga(pos(t, i), f));
+    // guitare funk claire en grattés étouffés sur les contretemps
+    const acc = m === 3 ? A9 : E9;
+    [2, 5, 10, 13].forEach(i => chick(pos(t, i), acc));
+    // cuivres en réponse
+    if (m === 1) cuivres(pos(t, 14), [71, 74, 79], dbl * 1.8, 0.03);
+    if (m === 3) { cuivres(pos(t, 2), [69, 73, 76], dbl * 1.2, 0.03); cuivres(pos(t, 14), [71, 75, 78, 83], dbl * 3, 0.035); }
+
+    // batterie rock : grosse caisse qui pousse, caisse claire sur 2 et 4, charleston en doubles
+    [0, 3, 8, 10].forEach(i => grosseCaisse(pos(t, i), 0.7));
+    [4, 12].forEach(i => caisseClaire(pos(t, i), 0.24));
+    [7, 15].forEach(i => caisseClaire(pos(t, i), 0.05));          // notes fantômes
+    if (m === 3) [13, 14, 15].forEach(i => caisseClaire(pos(t, i), 0.14)); // petit roulement
+    for (let i = 0; i < 16; i++) bruit(pos(t, i), i % 4 === 0 ? 0.09 : 0.035, i % 2 ? 0.02 : 0.034, 8500);
+    if (m === 0) bruit(t, 1.2, 0.07, 5000);                     // cymbale crash en début de cycle
+    // cowbell pour garder le côté funk
+    [0, 6, 8, 14].forEach(i => cowbell(pos(t, i), 0.03));
     mesure++;
   };
   const planifier = () => {
@@ -166,7 +203,7 @@
   const demarrerMusique = async () => {
     musique = ctx.createGain(); musique.gain.value = 0.85;
     // son "vinyle" : aigus adoucis + léger pleurage
-    const chaud = ctx.createBiquadFilter(); chaud.type = 'lowpass'; chaud.frequency.value = 3800;
+    const chaud = ctx.createBiquadFilter(); chaud.type = 'lowpass'; chaud.frequency.value = 6500;
     musique.connect(chaud).connect(sortie);
 
     // morceau YouTube : la platine ne garde que le crépitement du vinyle
