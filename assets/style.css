@@ -507,7 +507,9 @@ a.img:hover { transform: translateY(-6px) rotate(var(--r)); }
 /* ==========================================================
    Platine de l'accueil : musique de studio et crépitement de vinyle
    ========================================================== */
-.platine { position: fixed; z-index: 80; left: clamp(16px, 2.4vw, 32px); bottom: clamp(16px, 2.4vw, 28px);
+.platine-zone { position: fixed; z-index: 80; left: clamp(16px, 2.4vw, 32px); bottom: clamp(16px, 2.4vw, 28px);
+  display: flex; align-items: center; gap: 10px; transition: opacity .4s ease; }
+.platine { position: relative;
   display: flex; align-items: center; gap: 12px; padding: 8px 18px 8px 8px; border: 0; border-radius: 999px; cursor: pointer;
   background: var(--jaguar); color: var(--creme); font: 700 12px/1 var(--f-texte); letter-spacing: .08em; text-transform: uppercase;
   box-shadow: 0 6px 18px rgba(0,0,0,.45), inset 0 0 0 1px rgba(239,235,226,.15); transition: transform .2s ease, background .2s ease; }
@@ -530,3 +532,19 @@ a.img:hover { transform: translateY(-6px) rotate(var(--r)); }
 @keyframes eq { 0%, 100% { height: 3px; } 50% { height: 14px; } }
 @media (max-width: 599px) { .platine { padding-right: 8px; } .platine-txt { display: none; } }
 @media (prefers-reduced-motion: reduce) { .platine.joue .platine-disque, .platine-eq i { animation: none; } }
+
+/* curseur de volume à côté de la platine */
+.platine-volume { display: flex; align-items: center; height: 40px; padding: 0 14px; border-radius: 999px;
+  background: var(--jaguar); box-shadow: 0 6px 18px rgba(0,0,0,.45), inset 0 0 0 1px rgba(239,235,226,.15);
+  opacity: 0; pointer-events: none; transform: translateX(-8px); transition: opacity .25s ease, transform .25s ease; }
+.platine-zone:hover .platine-volume, .platine-zone:focus-within .platine-volume, .platine.joue + .platine-volume { opacity: 1; pointer-events: auto; transform: none; }
+.platine-volume input { width: 96px; accent-color: var(--or); cursor: pointer; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* en attente d'un premier geste : la platine pulse doucement */
+.platine.attend { animation: appel 1.8s ease-in-out infinite; }
+@keyframes appel { 0%, 100% { box-shadow: 0 6px 18px rgba(0,0,0,.45), 0 0 0 0 rgba(233,157,37,.55); } 50% { box-shadow: 0 6px 18px rgba(0,0,0,.45), 0 0 0 10px rgba(233,157,37,0); } }
+/* une fois dans la page, le son est coupé par le défilement : la platine se fait discrète */
+.platine-zone:has(.platine.discret):not(:hover) { opacity: .45; }
+.platine.discret .platine-disque { animation-play-state: paused; }
+@media (max-width: 599px) { .platine-volume { display: none; } }
+@media (prefers-reduced-motion: reduce) { .platine.attend { animation: none; } }

@@ -1,7 +1,7 @@
 // ==========================================================
 // Platine de l'accueil : une boucle lo-fi et le crépitement d'un vinyle.
-// Les navigateurs interdisent le son automatique : la musique démarre
-// au clic sur la platine, et s'arrête au clic suivant.
+// La musique se lance dès l'arrivée sur l'accueil (ou au premier geste si
+// le navigateur bloque le son), puis baisse au fil du défilement.
 //
 // Pour mettre ta propre musique : dépose ton fichier dans assets/audio/
 // puis ajoute data-piste="assets/audio/ton-fichier.mp3" sur le bouton .platine
@@ -115,20 +115,46 @@
     minuterie = setInterval(planifier, 400);
   };
 
+  // ---------- volume : réglage de l'utilisateur × position dans la page ----------
+  // Sur l'accueil le son est plein ; en défilant pour entrer dans l'écran il baisse
+  // petit à petit, jusqu'au silence une fois dans la page. Il remonte si on revient.
+  const VOLUME_MAX = 0.35;
+  const curseur = bouton.parentElement.querySelector('.platine-volume input');
+  let reglage = 0.8;            // curseur de volume (0 → 1)
+  let niveau = null;            // nœud de volume piloté par le défilement
+  const salle = document.querySelector('.hero-cine');
+  const facteurDefilement = () => {
+    if (!salle) return 1;
+    const course = Math.max(1, salle.offsetHeight - window.innerHeight);
+    const p = Math.min(1, Math.max(0, -salle.getBoundingClientRect().top / (course * 0.85)));
+    return Math.pow(1 - p, 1.6); // baisse douce au début, plus nette en approchant de l'écran
+  };
+  const majVolume = (lissage = 0.12) => {
+    if (!niveau) return;
+    const cible = VOLUME_MAX * reglage * facteurDefilement();
+    niveau.gain.setTargetAtTime(cible, ctx.currentTime, lissage);
+    bouton.classList.toggle('discret', facteurDefilement() < 0.02);
+  };
+
   const lancer = async () => {
     if (!ctx) {
       ctx = new (window.AudioContext || window.webkitAudioContext)();
+      niveau = ctx.createGain(); niveau.gain.value = 0;
+      niveau.connect(ctx.destination);
       sortie = ctx.createGain(); sortie.gain.value = 0;
-      sortie.connect(ctx.destination);
+      sortie.connect(niveau);
       creerCrepitement();
       await demarrerMusique();
-    } else {
-      await ctx.resume();
-      if (piste) piste.play();
     }
+    // resume() reste en attente tant que le navigateur bloque le son : on n'attend pas plus de 300 ms
+    await Promise.race([ctx.resume(), new Promise(r => setTimeout(r, 300))]);
+    if (ctx.state !== 'running') return false;   // le navigateur refuse encore le son
+    if (piste) piste.play();
     sortie.gain.cancelScheduledValues(ctx.currentTime);
-    sortie.gain.setTargetAtTime(0.35, ctx.currentTime, 0.6);   // montée douce
+    sortie.gain.setTargetAtTime(1, ctx.currentTime, 0.6);   // montée douce
+    majVolume(0.05);
     enMarche = true; majBouton();
+    return true;
   };
   const couper = () => {
     if (!ctx) return;
@@ -138,11 +164,55 @@
   };
   const majBouton = () => {
     bouton.classList.toggle('joue', enMarche);
+    bouton.classList.remove('attend');
     bouton.setAttribute('aria-pressed', String(enMarche));
     bouton.querySelector('.platine-txt').textContent = enMarche ? 'Couper le son' : 'Lancer le vinyle';
   };
 
-  bouton.addEventListener('click', () => (enMarche ? couper() : lancer()));
+  // ---------- démarrage automatique ----------
+  // On essaie dès l'arrivée sur l'accueil. Les navigateurs bloquent le son tant que
+  // le visiteur n'a pas touché la page : dans ce cas, il démarre au premier clic,
+  // tap ou touche du clavier, où que ce soit.
+  let coupeParLeVisiteur = false;
+  const evenements = ['pointerdown', 'keydown', 'touchend'];
+  const auPremierGeste = e => {
+    if (coupeParLeVisiteur || enMarche) return retirer();
+    if (e.target.closest && e.target.closest('.platine')) return; // le bouton gère lui-même
+    lancer().then(ok => { if (ok) retirer(); });
+  };
+  const retirer = () => evenements.forEach(n => document.removeEventListener(n, auPremierGeste, true));
+  evenements.forEach(n => document.addEventListener(n, auPremierGeste, true));
+
+  const essaiAuChargement = async () => {
+    const ok = await lancer();
+    if (!ok) {
+      bouton.classList.add('attend');
+      bouton.querySelector('.platine-txt').textContent = matchMedia('(hover: none)').matches ? 'Touchez la page pour le son' : 'Cliquez pour le son';
+    } else retirer();
+  };
+  if (document.readyState === 'complete') essaiAuChargement();
+  else window.addEventListener('load', essaiAuChargement);
+
+  bouton.addEventListener('click', () => {
+    if (enMarche) { coupeParLeVisiteur = true; couper(); }
+    else { coupeParLeVisiteur = false; lancer(); }
+  });
+
+  if (curseur) {
+    reglage = Number(curseur.value) / 100;
+    curseur.addEventListener('input', () => {
+      reglage = Number(curseur.value) / 100;
+      if (!enMarche && reglage > 0 && !coupeParLeVisiteur) lancer();
+      majVolume(0.03);
+    });
+  }
+
+  let attente = false;
+  window.addEventListener('scroll', () => {
+    if (attente) return; attente = true;
+    requestAnimationFrame(() => { attente = false; majVolume(); });
+  }, { passive: true });
+
   // on coupe quand l'onglet n'est plus visible, sans perdre l'état
   document.addEventListener('visibilitychange', () => {
     if (!ctx) return;
