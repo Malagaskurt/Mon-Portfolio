@@ -3,9 +3,9 @@
 // La musique se lance dès l'arrivée sur l'accueil (ou au premier geste si
 // le navigateur bloque le son), puis baisse au fil du défilement.
 //
-// Pour mettre ta propre musique : dépose ton fichier dans assets/audio/
-// puis ajoute data-piste="assets/audio/ton-fichier.mp3" sur le bouton .platine
-// dans index.html. Il remplace la boucle générée (le crépitement reste).
+// Le morceau joué est le fichier indiqué par data-piste sur le bouton .platine
+// dans index.html (actuellement assets/audio/agree-to-disagree.mp3).
+// Sans data-piste, un groove rock / funk généré par le code prend le relais.
 // ==========================================================
 (() => {
   const bouton = document.querySelector('.platine');
@@ -209,14 +209,20 @@
     // morceau YouTube : la platine ne garde que le crépitement du vinyle
     if (await promesseYoutube) return;
 
-    // ta propre musique si elle existe
+    // morceau en fichier (data-piste sur le bouton) : il remplace le groove généré
     if (bouton.dataset.piste) {
-      try {
-        piste = new Audio(bouton.dataset.piste); piste.loop = true;
-        ctx.createMediaElementSource(piste).connect(musique);
-        await piste.play();
-        return;
-      } catch (e) { piste = null; /* fichier introuvable : boucle générée */ }
+      piste = new Audio(bouton.dataset.piste);
+      piste.loop = true; piste.preload = 'auto';
+      ctx.createMediaElementSource(piste).connect(musique);
+      musique.gain.value = 0.6;                 // un vrai morceau masterisé est bien plus fort que le groove
+      chaud.frequency.value = 9000;             // on garde ses aigus, juste adoucis
+      // si le fichier ne se charge pas, le groove généré prend le relais
+      piste.addEventListener('error', () => {
+        piste = null;
+        prochaineMesure = ctx.currentTime + 0.1; mesure = 0;
+        planifier(); minuterie = setInterval(planifier, 400);
+      }, { once: true });
+      return;                                   // la lecture démarre dans lancer(), une fois le son autorisé
     }
 
     prochaineMesure = ctx.currentTime + 0.1; mesure = 0;
@@ -259,7 +265,7 @@
     // resume() reste en attente tant que le navigateur bloque le son : on n'attend pas plus de 300 ms
     await Promise.race([ctx.resume(), new Promise(r => setTimeout(r, 300))]);
     if (ctx.state !== 'running') return false;   // le navigateur refuse encore le son
-    if (piste) piste.play();
+    if (piste) piste.play().catch(() => {});
     if (avecYoutube()) { yt.unMute(); yt.playVideo(); }
     sortie.gain.cancelScheduledValues(ctx.currentTime);
     sortie.gain.setTargetAtTime(1, ctx.currentTime, 0.6);   // montée douce
@@ -329,7 +335,7 @@
   // on coupe quand l'onglet n'est plus visible, sans perdre l'état
   document.addEventListener('visibilitychange', () => {
     if (!ctx) return;
-    if (document.hidden) { ctx.suspend(); if (avecYoutube()) yt.pauseVideo(); }
-    else if (enMarche) { ctx.resume(); if (avecYoutube()) yt.playVideo(); }
+    if (document.hidden) { ctx.suspend(); if (piste) piste.pause(); if (avecYoutube()) yt.pauseVideo(); }
+    else if (enMarche) { ctx.resume(); if (piste) piste.play().catch(() => {}); if (avecYoutube()) yt.playVideo(); }
   });
 })();

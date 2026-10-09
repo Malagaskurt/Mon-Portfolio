@@ -575,3 +575,4 @@ a.img:hover { transform: translateY(-6px) rotate(var(--r)); }
 .platine-eq, .platine-volume, .platine-disque { display: none !important; }
 .platine.attend { animation: none; border-color: var(--or); color: var(--or); }
 @media (max-width: 599px) { .platine { padding: 12px 14px; } .platine-txt { display: inline; } }
+.footer .credit-musique { opacity: .6; text-transform: none; letter-spacing: .02em; }

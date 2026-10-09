@@ -51,9 +51,9 @@ Chaque `git push` met le site à jour automatiquement.
 
 ## Musique de l'accueil
 
-Le bouton son en bas à gauche joue un groove rock / funk à 112 BPM (composition originale, générée par le code, sans droits à payer) avec le crépitement d'un vinyle. Elle démarre dès l'arrivée sur l'accueil. Si le navigateur bloque le son (c'est le cas par défaut pour un nouveau visiteur), elle démarre au premier clic ou tap sur la page. En défilant pour entrer dans l'écran, le volume baisse petit à petit jusqu'au silence, et remonte si on revient en haut. Un clic sur le bouton « Couper le son » arrête la musique pour de bon.
+L'accueil joue « Agree to Disagree » (musique rock libre de droit), fichier `assets/audio/agree-to-disagree.mp3`, avec le crépitement d'un vinyle par-dessus. La musique démarre dès l'arrivée sur l'accueil ; si le navigateur bloque le son (c'est le cas par défaut pour un nouveau visiteur), elle démarre au premier clic ou tap sur la page. En défilant pour entrer dans l'écran, le volume baisse petit à petit jusqu'au silence, et remonte si on revient en haut. Le bouton « Couper le son » en bas à gauche l'arrête pour de bon. Le crédit du morceau est dans le pied de page de l'accueil.
 
-Pour mettre ta propre musique à la place du groove, dépose le fichier dans `assets/audio/` puis ajoute `data-piste="assets/audio/ton-fichier.mp3"` sur le bouton `platine` (le bouton son) dans `index.html`. Utilise une musique dont tu as les droits.
+Pour changer de morceau : dépose le fichier dans `assets/audio/` et remplace la valeur de `data-piste` sur le bouton `platine` dans `index.html`. N'utilise qu'une musique dont la licence autorise la diffusion sur un site, et mets à jour le crédit dans le pied de page. Si tu supprimes `data-piste`, un groove rock / funk généré par le code prend le relais.
 
 ## Sécurité
 
