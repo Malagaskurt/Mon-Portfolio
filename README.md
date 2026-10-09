@@ -49,6 +49,12 @@ puis va sur http://localhost:8000.
 
 Chaque `git push` met le site à jour automatiquement.
 
+## Musique de l'accueil
+
+Le bouton en bas à gauche de l'accueil lance une boucle lo-fi avec le crépitement d'un vinyle. Elle ne démarre jamais toute seule : les navigateurs bloquent le son automatique, et c'est plus respectueux pour un recruteur qui ouvre ton site au bureau.
+
+Pour mettre ta propre musique, dépose le fichier dans `assets/audio/` puis ajoute `data-piste="assets/audio/ton-fichier.mp3"` sur le bouton `platine` dans `index.html`. Utilise une musique dont tu as les droits.
+
 ## Sécurité
 
 - Chaque page déclare une politique de sécurité (balise `Content-Security-Policy` dans le `<head>`) : le site ne charge que ses propres fichiers, aucun script ou formulaire venu d'ailleurs ne peut s'y glisser. Si tu ajoutes un jour une vidéo intégrée (YouTube, Vimeo) ou une police en ligne, il faudra ajouter son adresse dans cette balise.

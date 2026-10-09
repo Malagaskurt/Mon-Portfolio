@@ -503,3 +503,30 @@ a.img:hover { transform: translateY(-6px) rotate(var(--r)); }
 @media (hover: none) { .tele-tag { opacity: 1; transform: translate(-50%, 0); font-size: 10px; padding: 5px 8px; } }
 .el.teles .tele .tele-tag { white-space: nowrap; font-size: 12px; line-height: 1.2; }
 @media (hover: none), (max-width: 1199px) { .el.teles .tele .tele-tag { font-size: 9px; padding: 4px 6px; bottom: 6%; opacity: 1; transform: translate(-50%, 0); } }
+
+/* ==========================================================
+   Platine de l'accueil : musique de studio et crépitement de vinyle
+   ========================================================== */
+.platine { position: fixed; z-index: 80; left: clamp(16px, 2.4vw, 32px); bottom: clamp(16px, 2.4vw, 28px);
+  display: flex; align-items: center; gap: 12px; padding: 8px 18px 8px 8px; border: 0; border-radius: 999px; cursor: pointer;
+  background: var(--jaguar); color: var(--creme); font: 700 12px/1 var(--f-texte); letter-spacing: .08em; text-transform: uppercase;
+  box-shadow: 0 6px 18px rgba(0,0,0,.45), inset 0 0 0 1px rgba(239,235,226,.15); transition: transform .2s ease, background .2s ease; }
+.platine:hover { transform: translateY(-2px); background: #120a1c; }
+.platine-disque { position: relative; width: 40px; height: 40px; border-radius: 50%; flex: none;
+  background:
+    radial-gradient(circle, var(--creme) 0 2px, var(--rouge) 3px 9px, transparent 10px),
+    repeating-radial-gradient(circle, #111 0 1px, #1d1d1d 1.5px 2.5px),
+    #111;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+.platine-disque::after { content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: conic-gradient(from 20deg, transparent 0 40deg, rgba(255,255,255,.18) 55deg, transparent 75deg 220deg, rgba(255,255,255,.1) 235deg, transparent 250deg); }
+.platine.joue .platine-disque { animation: tourne 1.8s linear infinite; }
+@keyframes tourne { to { transform: rotate(360deg); } }
+/* petites barres d'égaliseur quand le son tourne */
+.platine-eq { display: none; gap: 2px; align-items: flex-end; height: 14px; }
+.platine.joue .platine-eq { display: inline-flex; }
+.platine-eq i { display: block; width: 3px; background: var(--or); animation: eq 1s ease-in-out infinite; }
+.platine-eq i:nth-child(2) { animation-delay: -.3s; } .platine-eq i:nth-child(3) { animation-delay: -.6s; }
+@keyframes eq { 0%, 100% { height: 3px; } 50% { height: 14px; } }
+@media (max-width: 599px) { .platine { padding-right: 8px; } .platine-txt { display: none; } }
+@media (prefers-reduced-motion: reduce) { .platine.joue .platine-disque, .platine-eq i { animation: none; } }
