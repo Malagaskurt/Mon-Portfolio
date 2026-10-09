@@ -53,7 +53,9 @@ Chaque `git push` met le site à jour automatiquement.
 
 La platine en bas à gauche joue un groove funk / soul années 70 (composition originale, générée par le code, sans droits à payer) avec le crépitement d'un vinyle. Elle démarre dès l'arrivée sur l'accueil. Si le navigateur bloque le son (c'est le cas par défaut pour un nouveau visiteur), elle démarre au premier clic ou tap sur la page. En défilant pour entrer dans l'écran, le volume baisse petit à petit jusqu'au silence, et remonte si on revient en haut. Un curseur de volume apparaît à côté de la platine ; un clic sur la platine coupe le son pour de bon.
 
-Pour mettre ta propre musique, dépose le fichier dans `assets/audio/` puis ajoute `data-piste="assets/audio/ton-fichier.mp3"` sur le bouton `platine` dans `index.html`. Utilise une musique dont tu as les droits.
+Le morceau vient de YouTube : son identifiant est dans `data-youtube="1shxNpQCuvs"` sur le bouton `platine` de `index.html`. Pour changer de morceau, remplace cet identifiant (les lettres après `youtu.be/` ou `v=` dans le lien). Le lecteur officiel s'affiche en petit au-dessus de la platine pendant la lecture, le site n'héberge pas la musique. Si YouTube ne charge pas, le groove funk original prend le relais. Pour revenir au groove, supprime `data-youtube`.
+
+Pour mettre ta propre musique à la place, dépose le fichier dans `assets/audio/` puis ajoute `data-piste="assets/audio/ton-fichier.mp3"` sur le bouton `platine` dans `index.html`. Utilise une musique dont tu as les droits.
 
 ## Sécurité
 

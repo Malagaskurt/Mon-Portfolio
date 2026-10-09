@@ -130,11 +130,47 @@
     }
   };
 
+  // ---------- morceau YouTube (data-youtube="ID" sur le bouton) ----------
+  // Le morceau est lu par le lecteur officiel YouTube, affiché en petit à côté
+  // de la platine pendant la lecture. Le site ne copie ni n'héberge la musique.
+  const idYoutube = bouton.dataset.youtube || '';
+  let yt = null, ytPret = false, ytEchec = false;
+  const zoneVideo = bouton.parentElement.querySelector('.platine-video');
+  const chargerYoutube = () => new Promise(resolve => {
+    if (!idYoutube || !zoneVideo) return resolve(false);
+    const fin = ok => { if (!ok) ytEchec = true; resolve(ok); };
+    const creer = () => {
+      yt = new YT.Player(zoneVideo.querySelector('div'), {
+        host: 'https://www.youtube-nocookie.com',
+        videoId: idYoutube,
+        width: 224, height: 126,
+        playerVars: { loop: 1, playlist: idYoutube, controls: 0, modestbranding: 1, rel: 0, playsinline: 1, disablekb: 1 },
+        events: {
+          onReady: () => { ytPret = true; fin(true); },
+          onError: () => fin(false),
+          onStateChange: e => { if (e.data === 0) yt.playVideo(); },
+        },
+      });
+    };
+    if (window.YT && YT.Player) return creer();
+    window.onYouTubeIframeAPIReady = creer;
+    const script = document.createElement('script');
+    script.src = 'https://www.youtube.com/iframe_api';
+    script.onerror = () => fin(false);
+    document.head.appendChild(script);
+    setTimeout(() => { if (!ytPret) fin(false); }, 8000);
+  });
+  const promesseYoutube = idYoutube ? chargerYoutube() : Promise.resolve(false);
+  const avecYoutube = () => ytPret && !ytEchec;
+
   const demarrerMusique = async () => {
     musique = ctx.createGain(); musique.gain.value = 0.85;
     // son "vinyle" : aigus adoucis + léger pleurage
     const chaud = ctx.createBiquadFilter(); chaud.type = 'lowpass'; chaud.frequency.value = 3800;
     musique.connect(chaud).connect(sortie);
+
+    // morceau YouTube : la platine ne garde que le crépitement du vinyle
+    if (await promesseYoutube) return;
 
     // ta propre musique si elle existe
     if (bouton.dataset.piste) {
@@ -168,7 +204,8 @@
   const majVolume = (lissage = 0.12) => {
     if (!niveau) return;
     const cible = VOLUME_MAX * reglage * facteurDefilement();
-    niveau.gain.setTargetAtTime(cible, ctx.currentTime, lissage);
+    niveau.gain.setTargetAtTime(avecYoutube() ? cible * 0.45 : cible, ctx.currentTime, lissage); // crépitement plus discret sous un vrai morceau
+    if (avecYoutube()) yt.setVolume(Math.round(100 * reglage * facteurDefilement()));
     bouton.classList.toggle('discret', facteurDefilement() < 0.02);
   };
 
@@ -186,6 +223,7 @@
     await Promise.race([ctx.resume(), new Promise(r => setTimeout(r, 300))]);
     if (ctx.state !== 'running') return false;   // le navigateur refuse encore le son
     if (piste) piste.play();
+    if (avecYoutube()) { yt.unMute(); yt.playVideo(); }
     sortie.gain.cancelScheduledValues(ctx.currentTime);
     sortie.gain.setTargetAtTime(1, ctx.currentTime, 0.6);   // montée douce
     majVolume(0.05);
@@ -195,11 +233,13 @@
   const couper = () => {
     if (!ctx) return;
     sortie.gain.setTargetAtTime(0, ctx.currentTime, 0.25);
+    if (avecYoutube()) yt.pauseVideo();
     setTimeout(() => { if (!enMarche) { ctx.suspend(); if (piste) piste.pause(); } }, 900);
     enMarche = false; majBouton();
   };
   const majBouton = () => {
     bouton.classList.toggle('joue', enMarche);
+    if (zoneVideo) zoneVideo.classList.toggle('visible', enMarche && avecYoutube());
     bouton.classList.remove('attend');
     bouton.setAttribute('aria-pressed', String(enMarche));
     bouton.querySelector('.platine-txt').textContent = enMarche ? 'Couper le son' : 'Lancer le vinyle';
@@ -252,6 +292,7 @@
   // on coupe quand l'onglet n'est plus visible, sans perdre l'état
   document.addEventListener('visibilitychange', () => {
     if (!ctx) return;
-    if (document.hidden) ctx.suspend(); else if (enMarche) ctx.resume();
+    if (document.hidden) { ctx.suspend(); if (avecYoutube()) yt.pauseVideo(); }
+    else if (enMarche) { ctx.resume(); if (avecYoutube()) yt.playVideo(); }
   });
 })();
