@@ -49,6 +49,17 @@ puis va sur http://localhost:8000.
 
 Chaque `git push` met le site à jour automatiquement.
 
+## Animations
+
+Les animations utilisent **Motion** (la librairie derrière Framer Motion, dans sa version JavaScript sans React), hébergée avec le site dans `assets/vendor/motion.js` (licence MIT). Les réglages sont dans `assets/animations.js` :
+
+- les affiches, images et stickers arrivent avec un effet ressort, en cascade, section par section ;
+- au survol, ils rebondissent légèrement ;
+- les stickers flottent un peu au défilement ;
+- les boutons s'enfoncent au clic.
+
+Pour un effet plus ou moins nerveux, change `stiffness` (raideur) et `damping` (amorti) en haut du fichier. Si quelqu'un a désactivé les animations sur son appareil, rien ne bouge.
+
 ## Musique de l'accueil
 
 L'accueil joue « Agree to Disagree » (musique rock libre de droit), fichier `assets/audio/agree-to-disagree.mp3`, avec le crépitement d'un vinyle par-dessus. En arrivant, le visiteur voit un écran d'entrée (le studio dans le noir) avec le bouton « Entrer dans le studio » : au clic, la lumière s'allume et la musique démarre. Ce clic est obligatoire, les navigateurs interdisent tout son avant un geste du visiteur. Le lien « Entrer sans le son » ouvre le site en silence. L'écran ne s'affiche qu'une fois par visite (fichier `assets/entree.js`, bloc `entree` en haut de `index.html`). En défilant pour entrer dans l'écran, le volume baisse petit à petit jusqu'au silence, et remonte si on revient en haut. Le bouton « Couper le son » en bas à gauche l'arrête pour de bon. Le crédit du morceau est dans le pied de page de l'accueil.
