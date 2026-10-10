@@ -598,3 +598,61 @@ html.entree-ouverte, html.entree-ouverte body { overflow: hidden; }
 .entree.allume { pointer-events: none; animation: lumiere 1.2s ease forwards; }
 @keyframes lumiere { 0% { opacity: 1; } 12% { opacity: .35; } 20% { opacity: .9; } 30% { opacity: .2; } 40% { opacity: .6; } 100% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .entree.allume { animation: none; opacity: 0; } }
+
+/* ==========================================================
+   Page bilan : statistiques de visite (bilan.html)
+   ========================================================== */
+body.bilan { background: var(--jaguar) url(tex/mur-nuit.jpg) 0 0 / 512px; color: var(--creme); }
+.bilan-page { width: min(100%, 1200px); margin: 0 auto; padding: 40px clamp(16px, 5vw, 60px) 80px; }
+.bilan-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.bilan-nav .logo { color: var(--or); }
+.bilan-tete { margin: 72px 0 40px; }
+.bilan-titre { font-family: var(--f-titre); font-size: clamp(48px, 8vw, 96px); line-height: .9; letter-spacing: -.02em; text-transform: uppercase; color: var(--or); }
+.bilan-intro { max-width: 640px; margin-top: 18px; font-size: 16px; line-height: 1.6; opacity: .9; }
+.bilan-periodes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
+.bilan-periodes button { cursor: pointer; border: 1.5px solid rgba(239,235,226,.6); background: none; color: var(--creme);
+  font: 700 12px/1 var(--f-texte); letter-spacing: .08em; text-transform: uppercase; padding: 12px 16px; }
+.bilan-periodes button:hover { border-color: var(--or); color: var(--or); }
+.bilan-periodes button[aria-pressed="true"] { background: var(--or); border-color: var(--or); color: var(--jaguar); }
+.bilan-alerte { margin-bottom: 24px; padding: 16px 20px; background: var(--rouge); color: var(--creme); font-size: 14px; line-height: 1.6; }
+
+.bilan-entonnoir { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.bilan-tuile { padding: 24px; background: var(--creme); color: var(--jaguar); box-shadow: var(--ombre-affiche); }
+.bilan-tuile:nth-child(1) { transform: rotate(-.6deg); }
+.bilan-tuile:nth-child(2) { transform: rotate(.5deg); }
+.bilan-tuile:nth-child(3) { transform: rotate(-.3deg); background: var(--or); }
+.bilan-etape { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.bilan-nombre { margin: 14px 0 8px; font-family: var(--f-titre); font-size: clamp(48px, 6vw, 80px); line-height: 1; color: var(--rouge); font-variant-numeric: tabular-nums; }
+.bilan-tuile:nth-child(3) .bilan-nombre { color: var(--jaguar); }
+.bilan-note { font-size: 13px; line-height: 1.5; }
+
+.bilan-grille { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+.bilan-carte { padding: 28px 24px; background: rgba(239,235,226,.06); border: 1px solid rgba(239,235,226,.18); }
+.bilan-large { grid-column: 1 / -1; }
+.bilan-carte h2 { font-family: var(--f-titre); font-size: 26px; line-height: 1.1; text-transform: uppercase; color: var(--or); }
+.bilan-sous { margin: 6px 0 20px; font-size: 13px; opacity: .7; }
+.bilan-barres { list-style: none; display: grid; gap: 14px; }
+.bilan-large .bilan-barres { grid-template-columns: 1fr 1fr; column-gap: 40px; }
+.bilan-barres li { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; font-size: 14px; line-height: 1.4; }
+.bilan-valeur { font-weight: 700; font-variant-numeric: tabular-nums; }
+.bilan-barre { grid-column: 1 / -1; height: 8px; background: rgba(239,235,226,.12); position: relative; }
+.bilan-barre::after { content: ""; position: absolute; inset: 0 auto 0 0; width: calc(var(--part, 0) * 100%); min-width: 4px;
+  background: var(--or); border-radius: 0 4px 4px 0; transition: width .5s ease; }
+.bilan-vide { opacity: .6; font-size: 14px; }
+.bilan-charge .bilan-nombre, .bilan-charge .bilan-barres { opacity: .35; transition: opacity .2s; }
+
+.bilan-aide { margin-top: 16px; font-size: 14px; line-height: 1.7; }
+.bilan-aide h2 { margin-bottom: 12px; }
+.bilan-aide ul { margin: 8px 0 14px; padding-left: 20px; }
+.bilan-aide code { color: var(--or); overflow-wrap: anywhere; }
+.bilan-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 18px; }
+.bilan-moi { cursor: pointer; border: 1.5px solid rgba(239,235,226,.6); background: none; color: var(--creme);
+  font: 700 12px/1.4 var(--f-texte); letter-spacing: .06em; text-transform: uppercase; padding: 12px 16px; text-align: left; }
+.bilan-moi:hover, .bilan-lien:hover { color: var(--or); border-color: var(--or); }
+.bilan-lien { font-weight: 700; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; text-decoration: underline; text-underline-offset: 4px; }
+
+@media (max-width: 899px) {
+  .bilan-entonnoir, .bilan-grille, .bilan-large .bilan-barres { grid-template-columns: 1fr; }
+  .bilan-tete { margin-top: 48px; }
+}
+@media (prefers-reduced-motion: reduce) { .bilan-barre::after { transition: none; } }

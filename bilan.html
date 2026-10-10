@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://*.goatcounter.com; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Bilan des visites · Portfolio de Dimby</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/archivo-black.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/space-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="bilan">
+<main class="bilan-page">
+<header class="bilan-nav"><a class="logo" href="index.html">Dimby.</a><a class="retour" href="index.html">← Retour au portfolio</a></header>
+
+<div class="bilan-tete">
+<h1 class="bilan-titre">Le bilan.</h1>
+<p class="bilan-intro">Combien de personnes ont cliqué sur le lien du portfolio, l’ont vraiment visité, et ce qu’elles y ont fait.</p>
+<div class="bilan-periodes" role="group" aria-label="Période">
+<button type="button" data-periode="week">7 jours</button>
+<button type="button" data-periode="month" aria-pressed="true">30 jours</button>
+<button type="button" data-periode="year">1 an</button>
+<button type="button" data-periode="">Depuis le début</button>
+</div>
+</div>
+
+<p class="bilan-alerte" hidden></p>
+
+<section class="bilan-entonnoir" aria-label="Les trois étapes d'une visite">
+<div class="bilan-tuile"><p class="bilan-etape">1 · Ont cliqué sur le lien</p><p class="bilan-nombre" data-chiffre="arrivee">…</p><p class="bilan-note">personnes arrivées sur le site</p></div>
+<div class="bilan-tuile"><p class="bilan-etape">2 · Ont visité le site</p><p class="bilan-nombre" data-chiffre="visite">…</p><p class="bilan-note" data-part="visite">restées au moins 10 secondes</p></div>
+<div class="bilan-tuile"><p class="bilan-etape">3 · Ont interagi</p><p class="bilan-nombre" data-chiffre="interaction">…</p><p class="bilan-note" data-part="interaction">ont cliqué sur quelque chose</p></div>
+</section>
+
+<div class="bilan-grille">
+<section class="bilan-carte"><h2>D’où ils viennent</h2><p class="bilan-sous">Le site ou le lien sur lequel ils ont cliqué.</p><ol class="bilan-barres" data-liste="sources"></ol></section>
+<section class="bilan-carte"><h2>Pages vues</h2><p class="bilan-sous">Nombre de personnes par page.</p><ol class="bilan-barres" data-liste="pages"></ol></section>
+<section class="bilan-carte bilan-large"><h2>Ce qu’ils ont fait</h2><p class="bilan-sous">Nombre de personnes qui ont fait chaque action.</p><ol class="bilan-barres" data-liste="actions"></ol></section>
+</div>
+
+<section class="bilan-carte bilan-aide">
+<h2>Savoir d’où vient chaque clic</h2>
+<p>Ajoute <code>?ref=</code> à la fin du lien que tu partages, le bilan le rangera au bon endroit :</p>
+<ul>
+<li>sur LinkedIn : <code>…/?ref=linkedin</code></li>
+<li>dans ton CV : <code>…/?ref=cv</code></li>
+<li>dans un mail de candidature : <code>…/?ref=candidature</code></li>
+<li>aussi possibles : <code>instagram</code>, <code>mail</code>, <code>github</code>, <code>facebook</code>, <code>whatsapp</code></li>
+</ul>
+<p>Les chiffres se mettent à jour toutes les quelques heures. Une personne qui revient plusieurs fois le même jour n’est comptée qu’une fois.</p>
+<p class="bilan-actions"><button type="button" class="bilan-moi"></button> <a class="bilan-lien" data-tableau href="#" target="_blank" rel="noopener">Tableau de bord complet ↗</a></p>
+</section>
+</main>
+<footer class="footer">
+  <span>© 2026 Dimby</span>
+  <span>Statistiques sans cookie, par GoatCounter</span>
+</footer>
+<script src="assets/stats.js" defer></script>
+<script src="assets/bilan.js" defer></script>
+</body>
+</html>

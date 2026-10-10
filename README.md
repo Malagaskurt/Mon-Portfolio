@@ -12,6 +12,9 @@ skate-aux-jo.html   projet Le skate aux JO
 video.html          projet Vidéo
 assets/style.css    toute la mise en forme (couleurs et polices en haut du fichier)
 assets/site.js      menu mobile
+assets/stats.js     comptage des visites (GoatCounter)
+assets/bilan.js     affichage de la page bilan
+bilan.html          bilan des visites (page cachée, non référencée)
 assets/img/         images exportées de Figma (WebP)
 assets/tex/         textures de fond (murs, papiers)
 assets/fonts/       polices Archivo Black, Space Mono et Anton (licence OFL)
@@ -66,8 +69,28 @@ L'accueil joue « Agree to Disagree » (musique rock libre de droit), fichier `a
 
 Pour changer de morceau : dépose le fichier dans `assets/audio/` et remplace la valeur de `data-piste` sur le bouton `platine` dans `index.html`. N'utilise qu'une musique dont la licence autorise la diffusion sur un site, et mets à jour le crédit dans le pied de page. Si tu supprimes `data-piste`, un groove rock / funk généré par le code prend le relais.
 
+## Bilan des visites
+
+La page `bilan.html` (ex. `https://…/bilan.html`) montre, sur 7 jours, 30 jours, 1 an ou depuis le début :
+
+1. **Ont cliqué sur le lien** : les personnes arrivées sur le site.
+2. **Ont visité le site** : celles restées au moins 10 secondes (ou qui ont ouvert une 2e page, ou cliqué).
+3. **Ont interagi** : celles qui ont cliqué sur quelque chose (entrée du studio, dossier projet, CV, mail, LinkedIn, Instagram, Figma…).
+
+Plus le détail : d'où elles viennent, les pages vues, et chaque action. La page n'est pas dans le menu et n'est pas référencée par Google ; garde le lien pour toi.
+
+Le comptage passe par **GoatCounter** : gratuit pour un site perso, sans cookie et sans donnée personnelle. À faire une seule fois :
+
+1. Crée un compte sur https://www.goatcounter.com/signup avec le code **`dimby`** (le site sera `dimby.goatcounter.com`). Si ce code est pris, choisis-en un autre et remplace `'dimby'` tout en haut de `assets/stats.js`.
+2. Dans GoatCounter : Settings > coche **« Allow adding visitor counts on your website »**, puis Save. Sans ça, la page bilan ne peut pas lire les chiffres.
+3. Ouvre `bilan.html` sur ton téléphone et ton ordinateur, et clique sur « Ne plus compter mes visites sur cet appareil » pour ne pas gonfler les chiffres toi-même.
+
+Pour savoir d'où vient chaque clic, ajoute `?ref=` au lien que tu partages : `…/?ref=linkedin` sur LinkedIn, `…/?ref=cv` dans ton CV, `…/?ref=candidature` dans un mail de candidature (aussi : `instagram`, `mail`, `github`, `facebook`, `whatsapp`). Sans `?ref=`, le site devine la source quand le navigateur la donne (LinkedIn, Google…) ; sinon il range la visite dans « Lien direct ».
+
+Bon à savoir : les chiffres se mettent à jour toutes les quelques heures ; une personne qui revient le même jour n'est comptée qu'une fois ; les visites faites depuis ton ordinateur (`localhost` ou double-clic sur le fichier) ne sont jamais comptées ; un visiteur équipé d'un bloqueur de pub peut passer inaperçu. Le tableau de bord complet (pays, appareils, navigateurs…) est sur `https://dimby.goatcounter.com`.
+
 ## Sécurité
 
-- Chaque page déclare une politique de sécurité (balise `Content-Security-Policy` dans le `<head>`) : le site ne charge que ses propres fichiers, aucun script ou formulaire venu d'ailleurs ne peut s'y glisser. Si tu ajoutes un jour une vidéo intégrée (YouTube, Vimeo) ou une police en ligne, il faudra ajouter son adresse dans cette balise.
+- Chaque page déclare une politique de sécurité (balise `Content-Security-Policy` dans le `<head>`) : le site ne charge que ses propres fichiers, aucun script ou formulaire venu d'ailleurs ne peut s'y glisser. Seule exception : l'adresse de GoatCounter (`*.goatcounter.com`), à qui le site envoie le comptage des visites. Si tu ajoutes un jour une vidéo intégrée (YouTube, Vimeo) ou une police en ligne, il faudra ajouter son adresse dans cette balise.
 - Les liens vers Instagram, YouTube, LinkedIn et GitHub s'ouvrent dans un nouvel onglet sans donner la main sur ton site (`rel="noopener"`).
 - La vraie protection, c'est ton compte GitHub : double authentification activée, mot de passe unique, et personne d'autre en collaborateur sur le dépôt.
