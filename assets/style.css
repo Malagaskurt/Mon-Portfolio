@@ -602,8 +602,9 @@ html.entree-ouverte, html.entree-ouverte body { overflow: hidden; }
 /* ==========================================================
    Page bilan : statistiques de visite (bilan.html)
    ========================================================== */
-body.bilan { background: var(--jaguar) url(tex/mur-nuit.jpg) 0 0 / 512px; color: var(--creme); }
-.bilan-page { width: min(100%, 1200px); margin: 0 auto; padding: 40px clamp(16px, 5vw, 60px) 80px; }
+body.bilan [hidden] { display: none !important; }
+body.bilan { background: var(--jaguar) url(tex/mur-nuit.jpg) 0 0 / 512px; color: var(--creme); min-height: 100vh; display: flex; flex-direction: column; }
+.bilan-page { flex: 1; width: min(100%, 1200px); margin: 0 auto; padding: 40px clamp(16px, 5vw, 60px) 80px; }
 .bilan-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
 .bilan-nav .logo { color: var(--or); }
 .bilan-tete { margin: 72px 0 40px; }
@@ -650,6 +651,16 @@ body.bilan { background: var(--jaguar) url(tex/mur-nuit.jpg) 0 0 / 512px; color:
   font: 700 12px/1.4 var(--f-texte); letter-spacing: .06em; text-transform: uppercase; padding: 12px 16px; text-align: left; }
 .bilan-moi:hover, .bilan-lien:hover { color: var(--or); border-color: var(--or); }
 .bilan-lien { font-weight: 700; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; text-decoration: underline; text-underline-offset: 4px; }
+
+.bilan-cle { max-width: 640px; }
+.bilan-cle label { display: block; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px; }
+.bilan-champ { display: flex; flex-wrap: wrap; gap: 8px; }
+.bilan-champ input { flex: 1 1 240px; min-width: 0; padding: 14px 16px; border: 1.5px solid rgba(239,235,226,.6); background: rgba(4,0,17,.6);
+  color: var(--creme); font: 400 15px/1.2 var(--f-texte); }
+.bilan-champ input:focus { border-color: var(--or); outline: none; }
+.bilan-champ button { cursor: pointer; border: 0; background: var(--or); color: var(--jaguar); padding: 14px 20px;
+  font: 700 12px/1 var(--f-texte); letter-spacing: .08em; text-transform: uppercase; }
+.bilan-champ button:hover { background: #f0ad3f; }
 
 @media (max-width: 899px) {
   .bilan-entonnoir, .bilan-grille, .bilan-large .bilan-barres { grid-template-columns: 1fr; }

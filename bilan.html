@@ -19,7 +19,7 @@
 <div class="bilan-tete">
 <h1 class="bilan-titre">Le bilan.</h1>
 <p class="bilan-intro">Combien de personnes ont cliqué sur le lien du portfolio, l’ont vraiment visité, et ce qu’elles y ont fait.</p>
-<div class="bilan-periodes" role="group" aria-label="Période">
+<div class="bilan-periodes" role="group" aria-label="Période" hidden>
 <button type="button" data-periode="week">7 jours</button>
 <button type="button" data-periode="month" aria-pressed="true">30 jours</button>
 <button type="button" data-periode="year">1 an</button>
@@ -28,6 +28,15 @@
 </div>
 
 <p class="bilan-alerte" hidden></p>
+
+<form class="bilan-carte bilan-cle" hidden>
+<h2>Page privée</h2>
+<p class="bilan-sous">Entre ta clé d’accès GoatCounter pour voir le bilan. Elle reste uniquement sur cet appareil.</p>
+<label for="bilan-cle">Clé d’accès</label>
+<div class="bilan-champ"><input id="bilan-cle" name="password" type="password" autocomplete="current-password" spellcheck="false" required><button type="submit">Ouvrir le bilan →</button></div>
+</form>
+
+<div class="bilan-donnees" hidden>
 
 <section class="bilan-entonnoir" aria-label="Les trois étapes d'une visite">
 <div class="bilan-tuile"><p class="bilan-etape">1 · Ont cliqué sur le lien</p><p class="bilan-nombre" data-chiffre="arrivee">…</p><p class="bilan-note">personnes arrivées sur le site</p></div>
@@ -50,9 +59,10 @@
 <li>dans un mail de candidature : <code>…/?ref=candidature</code></li>
 <li>aussi possibles : <code>instagram</code>, <code>mail</code>, <code>github</code>, <code>facebook</code>, <code>whatsapp</code></li>
 </ul>
-<p>Les chiffres se mettent à jour toutes les quelques heures. Une personne qui revient plusieurs fois le même jour n’est comptée qu’une fois.</p>
-<p class="bilan-actions"><button type="button" class="bilan-moi"></button> <a class="bilan-lien" data-tableau href="#" target="_blank" rel="noopener">Tableau de bord complet ↗</a></p>
+<p>Les chiffres arrivent avec quelques minutes de retard. Une personne qui revient plusieurs fois le même jour n’est comptée qu’une fois.</p>
+<p class="bilan-actions"><button type="button" class="bilan-moi"></button> <button type="button" class="bilan-moi bilan-fermer">Verrouiller sur cet appareil</button> <a class="bilan-lien" data-tableau href="#" target="_blank" rel="noopener">Tableau de bord complet ↗</a></p>
 </section>
+</div>
 </main>
 <footer class="footer">
   <span>© 2026 Dimby</span>

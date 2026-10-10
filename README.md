@@ -14,7 +14,7 @@ assets/style.css    toute la mise en forme (couleurs et polices en haut du fichi
 assets/site.js      menu mobile
 assets/stats.js     comptage des visites (GoatCounter)
 assets/bilan.js     affichage de la page bilan
-bilan.html          bilan des visites (page cachée, non référencée)
+bilan.html          bilan des visites (page privée, protégée par ta clé GoatCounter)
 assets/img/         images exportées de Figma (WebP)
 assets/tex/         textures de fond (murs, papiers)
 assets/fonts/       polices Archivo Black, Space Mono et Anton (licence OFL)
@@ -71,23 +71,26 @@ Pour changer de morceau : dépose le fichier dans `assets/audio/` et remplace la
 
 ## Bilan des visites
 
-La page `bilan.html` (ex. `https://…/bilan.html`) montre, sur 7 jours, 30 jours, 1 an ou depuis le début :
+La page **privée** `https://malagaskurt.github.io/Mon-Portfolio/bilan.html` montre, sur 7 jours, 30 jours, 1 an ou depuis le début :
 
 1. **Ont cliqué sur le lien** : les personnes arrivées sur le site.
 2. **Ont visité le site** : celles restées au moins 10 secondes (ou qui ont ouvert une 2e page, ou cliqué).
 3. **Ont interagi** : celles qui ont cliqué sur quelque chose (entrée du studio, dossier projet, CV, mail, LinkedIn, Instagram, Figma…).
 
-Plus le détail : d'où elles viennent, les pages vues, et chaque action. La page n'est pas dans le menu et n'est pas référencée par Google ; garde le lien pour toi.
+Plus le détail : d'où elles viennent, les pages vues, et chaque action.
+
+**Elle est privée** : la page n'est dans aucun menu, Google ne la référence pas, et surtout elle n'affiche rien sans ta **clé d'accès** GoatCounter. Cette clé n'est écrite nulle part dans le code (le dépôt est public) : tu la tapes sur la page, elle reste enregistrée sur ton appareil seulement. Le bouton « Verrouiller sur cet appareil » l'efface.
 
 Le comptage passe par **GoatCounter** : gratuit pour un site perso, sans cookie et sans donnée personnelle. À faire une seule fois :
 
 1. Crée un compte sur https://www.goatcounter.com/signup avec le code **`dimby`** (le site sera `dimby.goatcounter.com`). Si ce code est pris, choisis-en un autre et remplace `'dimby'` tout en haut de `assets/stats.js`.
-2. Dans GoatCounter : Settings > coche **« Allow adding visitor counts on your website »**, puis Save. Sans ça, la page bilan ne peut pas lire les chiffres.
-3. Ouvre `bilan.html` sur ton téléphone et ton ordinateur, et clique sur « Ne plus compter mes visites sur cet appareil » pour ne pas gonfler les chiffres toi-même.
+2. Dans GoatCounter : Settings > API > crée une clé en ne cochant que **« Read statistics »**. Copie-la et garde-la pour toi (gestionnaire de mots de passe, par exemple). Ne la mets jamais dans un fichier du site.
+3. Ne coche **pas** « Allow adding visitor counts on your website » dans les réglages : cette option rendrait tes chiffres lisibles par n'importe qui.
+4. Ouvre la page bilan, colle ta clé, puis clique sur « Ne plus compter mes visites sur cet appareil » pour ne pas gonfler les chiffres toi-même. Fais-le sur ton téléphone et sur ton ordinateur.
 
 Pour savoir d'où vient chaque clic, ajoute `?ref=` au lien que tu partages : `…/?ref=linkedin` sur LinkedIn, `…/?ref=cv` dans ton CV, `…/?ref=candidature` dans un mail de candidature (aussi : `instagram`, `mail`, `github`, `facebook`, `whatsapp`). Sans `?ref=`, le site devine la source quand le navigateur la donne (LinkedIn, Google…) ; sinon il range la visite dans « Lien direct ».
 
-Bon à savoir : les chiffres se mettent à jour toutes les quelques heures ; une personne qui revient le même jour n'est comptée qu'une fois ; les visites faites depuis ton ordinateur (`localhost` ou double-clic sur le fichier) ne sont jamais comptées ; un visiteur équipé d'un bloqueur de pub peut passer inaperçu. Le tableau de bord complet (pays, appareils, navigateurs…) est sur `https://dimby.goatcounter.com`.
+Bon à savoir : les chiffres arrivent avec quelques minutes de retard ; une personne qui revient le même jour n'est comptée qu'une fois ; les visites faites depuis ton ordinateur (`localhost` ou double-clic sur le fichier) ne sont jamais comptées ; un visiteur équipé d'un bloqueur de pub peut passer inaperçu. Le tableau de bord complet (pays, appareils, navigateurs…) est sur `https://dimby.goatcounter.com`, lui aussi privé (connexion avec ton compte).
 
 ## Sécurité
 

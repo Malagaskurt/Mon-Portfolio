@@ -1,5 +1,7 @@
 // ==========================================================
-// Page bilan : lit les compteurs GoatCounter et les affiche.
+// Page bilan (privée) : lit les statistiques GoatCounter avec ta clé
+// d'accès et les affiche. La clé n'est jamais dans le code du site :
+// elle est tapée sur la page et gardée seulement sur cet appareil.
 // Le compte se règle en haut de assets/stats.js (STATS_COMPTE).
 // ==========================================================
 (() => {
@@ -50,15 +52,33 @@
   };
 
   const alerte = document.querySelector('.bilan-alerte');
+  const formulaire = document.querySelector('.bilan-cle');
+  const champ = document.getElementById('bilan-cle');
+  const donnees = document.querySelector('.bilan-donnees');
+  const periodes = document.querySelector('.bilan-periodes');
   const fmt = new Intl.NumberFormat('fr-FR');
 
-  // Un compteur : nombre de personnes pour une page ou une action (0 si jamais vue)
-  const compter = async (chemin, periode) => {
-    const r = await fetch(`${BASE}/counter/${encodeURIComponent(chemin)}.json${periode ? '?start=' + periode : ''}`);
-    if (r.status === 404) return 0;
+  const CLE = 'bilan-cle';
+  const lireCle = () => { try { return localStorage.getItem(CLE) || ''; } catch (e) { return ''; } };
+  const garderCle = v => { try { v ? localStorage.setItem(CLE, v) : localStorage.removeItem(CLE); } catch (e) { /* rien */ } };
+
+  const debut = periode => {
+    const jours = { week: 7, month: 30, year: 365 }[periode];
+    const d = jours ? new Date(Date.now() - jours * 864e5) : new Date('2024-01-01T00:00:00Z');
+    return d.toISOString().slice(0, 13) + ':00:00Z';   // arrondi à l'heure, comme l'attend GoatCounter
+  };
+
+  // Toutes les pages et actions de la période, en une seule demande
+  const lireStats = async (cle, periode) => {
+    const r = await fetch(`${BASE}/api/v0/stats/hits?limit=100&start=${encodeURIComponent(debut(periode))}`, {
+      headers: { Authorization: 'Bearer ' + cle },
+    });
+    if (r.status === 401 || r.status === 403) throw new Error('cle');
     if (!r.ok) throw new Error('statut ' + r.status);
     const j = await r.json();
-    return parseInt(String(j.count).replace(/\D/g, ''), 10) || 0;
+    const valeurs = {};
+    (j.hits || []).forEach(h => { valeurs[h.path] = (valeurs[h.path] || 0) + h.count; });
+    return valeurs;
   };
 
   const remplirListe = (ol, lignes, valeurs) => {
@@ -83,41 +103,69 @@
     });
   };
 
+  const afficher = ouvert => {
+    formulaire.hidden = ouvert;
+    donnees.hidden = !ouvert;
+    periodes.hidden = !ouvert;
+  };
+
   let demande = 0;
-  const charger = async periode => {
+  let periodeChoisie = 'month';
+  const charger = async () => {
+    const cle = lireCle();
+    if (!cle) { afficher(false); return; }
     const ceTour = ++demande;
     document.body.classList.add('bilan-charge');
     alerte.hidden = true;
-    const cles = ['arrivee', 'visite', 'interaction', ...Object.values(LISTES).flat().map(([cle]) => cle)];
-    const resultats = await Promise.allSettled(cles.map(c => compter(c, periode)));
-    if (ceTour !== demande) return;   // une autre période a été choisie entre-temps
-    document.body.classList.remove('bilan-charge');
-
-    if (resultats.every(r => r.status === 'rejected')) {
+    let valeurs;
+    try {
+      valeurs = await lireStats(cle, periodeChoisie);
+    } catch (e) {
+      if (ceTour !== demande) return;
+      document.body.classList.remove('bilan-charge');
       alerte.hidden = false;
-      alerte.textContent = `Impossible de lire les statistiques. Vérifie que le compte GoatCounter « ${COMPTE} » existe et que l’option « Allow adding visitor counts on your website » est cochée dans ses réglages.`;
-      document.querySelectorAll('[data-chiffre]').forEach(el => { el.textContent = '–'; });
-      document.querySelectorAll('[data-liste]').forEach(ol => ol.replaceChildren());
+      if (e.message === 'cle') {
+        garderCle('');
+        afficher(false);
+        alerte.textContent = 'Clé refusée. Vérifie-la dans GoatCounter (Settings > API) : elle doit avoir le droit « Read statistics ».';
+      } else {
+        alerte.textContent = `Impossible de lire les statistiques. Vérifie que le compte GoatCounter « ${COMPTE} » existe, puis réessaie dans un moment.`;
+      }
       return;
     }
-    const valeurs = {};
-    cles.forEach((c, i) => { valeurs[c] = resultats[i].status === 'fulfilled' ? resultats[i].value : 0; });
+    if (ceTour !== demande) return;   // une autre période a été choisie entre-temps
+    document.body.classList.remove('bilan-charge');
+    afficher(true);
 
-    document.querySelectorAll('[data-chiffre]').forEach(el => { el.textContent = fmt.format(valeurs[el.dataset.chiffre]); });
-    const base = valeurs.arrivee;
+    document.querySelectorAll('[data-chiffre]').forEach(el => { el.textContent = fmt.format(valeurs[el.dataset.chiffre] || 0); });
+    const base = valeurs.arrivee || 0;
     document.querySelectorAll('[data-part]').forEach(el => {
       const texte = el.dataset.part === 'visite' ? 'restées au moins 10 secondes' : 'ont cliqué sur quelque chose';
-      const part = base ? Math.round(100 * valeurs[el.dataset.part] / base) : null;
+      const part = base ? Math.round(100 * (valeurs[el.dataset.part] || 0) / base) : null;
       el.textContent = part === null ? texte : `${Math.min(part, 100)} % des arrivées · ${texte}`;
     });
     Object.entries(LISTES).forEach(([nom, lignes]) => remplirListe(document.querySelector(`[data-liste="${nom}"]`), lignes, valeurs));
   };
 
+  // Ouvrir avec la clé, ou verrouiller
+  formulaire.addEventListener('submit', e => {
+    e.preventDefault();
+    garderCle(champ.value.trim());
+    champ.value = '';
+    charger();
+  });
+  document.querySelector('.bilan-fermer').addEventListener('click', () => {
+    garderCle('');
+    afficher(false);
+    champ.focus();
+  });
+
   // Choix de la période
   const boutons = document.querySelectorAll('[data-periode]');
   boutons.forEach(b => b.addEventListener('click', () => {
     boutons.forEach(x => x.setAttribute('aria-pressed', String(x === b)));
-    charger(b.dataset.periode);
+    periodeChoisie = b.dataset.periode;
+    charger();
   }));
 
   // Ne pas compter ses propres visites sur cet appareil
@@ -133,5 +181,5 @@
   majMoi();
 
   document.querySelector('[data-tableau]').href = BASE;
-  charger('month');
+  charger();
 })();
